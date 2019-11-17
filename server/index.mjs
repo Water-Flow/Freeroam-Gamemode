@@ -74,7 +74,9 @@ alt.on('playerDisconnect', (player, reason) => {
     let playerCount = alt.Player.all.length;
     chat.broadcast(`{1cacd4}${player.name} {ffffff}has {ff0000}left {ffffff}the Server.. (${playerCount} players online)`);
     player.getMeta("vehicles").forEach(vehicle => {
-        vehicle.destroy();
+        if(vehicle != null){
+            vehicle.destroy();
+        }
     });
     player.setMeta("vehicles", undefined);
     alt.log(`${player.name} has leaved the server becauseof ${reason}`);
@@ -104,7 +106,10 @@ chat.registerCmd("veh", function (player, args) {
     }finally {
         var pvehs = player.getMeta("vehicles");
         if(pvehs.length >= 3){
-            pvehs.pop().destroy();
+            var toDestroy = pvehs.pop();
+            if(toDestroy != null){
+                toDestroy.destroy();
+            }
         }
         pvehs.unshift(vehicle);
         player.setMeta("vehicles", pvehs);
