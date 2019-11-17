@@ -49,10 +49,26 @@ alt.on('playerConnect', function (player) {
 
 alt.on('playerDeath', (player, killer, weapon) => {
     var spawn = spawns[randomNumber(0, spawns.length - 1)];
-    player.spawn(spawn.x, spawn.y, spawn.z, 3000);
-    alt.emitClient(player, "freeroam:clearPedBloodDamage");
+    alt.emitClient(player, "freeroam:switchInOutPlayer", false, 0, 2);
+    setTimeout(function(){
+        if(player !== undefined){
+            player.spawn(spawn.x, spawn.y, spawn.z, 0);
+            alt.emitClient(player, "freeroam:switchInOutPlayer", true);
+            alt.emitClient(player, "freeroam:clearPedBloodDamage");
+        }
+    }, 3000);
     alt.log(`${killer.name} gave ${player.name} the rest!`);
+
+    SendNotificationToAllPlayer(`~r~<C>${killer.name}</C> ~s~killed ~b~<C>${player.name}</C>`);
 });
+
+function SendNotificationToPlayer(player, message, textColor=0, bgColor=2, blink=false){
+    alt.emitClient(player, "freeroam:sendNotification", textColor, bgColor, message, blink);
+}
+
+function SendNotificationToAllPlayer(message, textColor=0, bgColor=2, blink=false){
+    alt.Player.all.forEach(plr => SendNotificationToPlayer(plr, message, textColor, bgColor, blink));
+}
 
 alt.on('playerDisconnect', (player, reason) => {
     let playerCount = alt.Player.all.length;
